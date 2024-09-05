@@ -44,6 +44,15 @@ public:
     UPROPERTY(BlueprintReadWrite, Category = "Default")
     int32 TotalPassengers;
 
+    UFUNCTION(BlueprintCallable, Category = "Multiplier")
+    FText GetCurrentMultiplier() const;
+
+    UFUNCTION(BlueprintCallable, Category = "Multiplier")
+    float GetMultiplierProgress() const;
+
+    UFUNCTION(BlueprintCallable, Category = "TimeAttack")
+    float GetProgressBarValue() const;
+
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Spawning")
     TSubclassOf<APawn> CarPawnClass;

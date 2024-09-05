@@ -117,9 +117,6 @@ void AGMTimeAttack::HandleBusStopPass(int32 NumberOfPassengers)
 
     // Reset time since last bus stop
     TimeSinceLastBusStop = 0.0f;
-
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("HandleBusStopPass triggered!"));
-
 }
 
 void AGMTimeAttack::ResetMultiplier()
@@ -311,4 +308,29 @@ void AGMTimeAttack::UpdateTotalPassengers(int32 NewPassengers)
 int32 AGMTimeAttack::GetTotalPassengers() const
 {
     return TotalPassengers;
+}
+
+FText AGMTimeAttack::GetCurrentMultiplier() const
+{
+    return FText::FromString(FString::Printf(TEXT("%.1f x"), CurrentMultiplier));
+}
+
+float AGMTimeAttack::GetMultiplierProgress() const
+{
+    return (CurrentMultiplier - 0.5f) / (5.0f - 0.5f);
+}
+
+float AGMTimeAttack::GetProgressBarValue() const
+{
+    // Ensure StreakResetTime is not zero to avoid division by zero
+    if (StreakResetTime <= 0.0f)
+    {
+        return 0.0f; // Or some default value or handle this case as needed
+    }
+
+    // Calculate the progress as a fraction of StreakResetTime
+    float Progress = TimeSinceLastBusStop / StreakResetTime;
+
+    // Clamp the progress between 0.0 and 1.0
+    return FMath::Clamp(Progress, 0.0f, 1.0f);
 }
