@@ -60,6 +60,7 @@ void ABusStop::OnTriggerBoxOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
             AGMTimeAttack* GameMode = Cast<AGMTimeAttack>(GetWorld()->GetAuthGameMode());
             if (GameMode)
             {
+                GameMode->HandleBusStopPass(NumberOfPassengers);
                 GameMode->SetNewTargetBusStop();
             }
 

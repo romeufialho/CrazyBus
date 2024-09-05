@@ -113,10 +113,13 @@ void AGMTimeAttack::HandleBusStopPass(int32 NumberOfPassengers)
 
     AddTimeToTimerWithMultiplier(NumberOfPassengers);
 
+    UpdateTotalPassengers(NumberOfPassengers);
+
     // Reset time since last bus stop
     TimeSinceLastBusStop = 0.0f;
 
-    UpdateTotalPassengers(NumberOfPassengers);
+    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("HandleBusStopPass triggered!"));
+
 }
 
 void AGMTimeAttack::ResetMultiplier()
