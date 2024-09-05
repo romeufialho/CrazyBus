@@ -48,7 +48,7 @@ void AGMTimeAttack::BeginPlay()
     FindClosestBusStop();
 
     CountdownTime = StartCountdownDuration;
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("CountdownTime initialized to: %f"), CountdownTime));
+    //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("CountdownTime initialized to: %f"), CountdownTime));
     StartCountdown(StartCountdownDuration);
 }
 
@@ -86,16 +86,6 @@ void AGMTimeAttack::UpdateCountdown(float DeltaTime)
     }
 }
 
-void AGMTimeAttack::AddTimeToTimer(int32 TimeToAdd)
-{
-    CountdownTime += TimeToAdd;
-    if (CountdownTime > StartCountdownDuration)
-    {
-        CountdownTime = StartCountdownDuration;
-    }
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Time added: %d, Total: %f"), TimeToAdd, CountdownTime));
-}
-
 void AGMTimeAttack::AddTimeToTimerWithMultiplier(int32 BaseTimeToAdd)
 {
     int32 TimeToAdd = BaseTimeToAdd * CurrentMultiplier;
@@ -122,7 +112,7 @@ void AGMTimeAttack::HandleBusStopPass(int32 NumberOfPassengers)
 void AGMTimeAttack::ResetMultiplier()
 {
     CurrentMultiplier = 0.5f;
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Multiplier reset to 0.5"));
+    //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Multiplier reset to 0.5"));
 }
 
 void AGMTimeAttack::UpdateMultiplier()
@@ -233,8 +223,8 @@ void AGMTimeAttack::FindClosestBusStop()
     if (ClosestBusStop)
     {
         TargetedBusStop = ClosestBusStop;
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Closest BusStop found at location: %s, distance: %f"),
-            *ClosestBusStop->GetActorLocation().ToString(), ClosestDistance));
+        /*GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Closest BusStop found at location: %s, distance: %f"),
+            *ClosestBusStop->GetActorLocation().ToString(), ClosestDistance));*/
 
         ABusStop* BusStopActor = Cast<ABusStop>(TargetedBusStop);
         if (BusStopActor)
@@ -291,7 +281,7 @@ void AGMTimeAttack::SetNewTargetBusStop()
             BusStopActor->SetIsBusStopTargeted(true);
         }
 
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("New target BusStop set!"));
+        //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("New target BusStop set!"));
     }
     else
     {
@@ -302,7 +292,7 @@ void AGMTimeAttack::SetNewTargetBusStop()
 void AGMTimeAttack::UpdateTotalPassengers(int32 NewPassengers)
 {
     TotalPassengers += NewPassengers;
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Total Passengers: %d"), TotalPassengers));
+    //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Total Passengers: %d"), TotalPassengers));
 }
 
 int32 AGMTimeAttack::GetTotalPassengers() const
@@ -322,15 +312,20 @@ float AGMTimeAttack::GetMultiplierProgress() const
 
 float AGMTimeAttack::GetProgressBarValue() const
 {
-    // Ensure StreakResetTime is not zero to avoid division by zero
-    if (StreakResetTime <= 0.0f)
+    const float MinMultiplier = 0.5f;
+
+    if (CurrentMultiplier <= MinMultiplier)
     {
-        return 0.0f; // Or some default value or handle this case as needed
+        return 1.0f;
     }
 
-    // Calculate the progress as a fraction of StreakResetTime
+    if (StreakResetTime <= 0.0f)
+    {
+        return 0.0f;
+    }
+
     float Progress = TimeSinceLastBusStop / StreakResetTime;
 
-    // Clamp the progress between 0.0 and 1.0
     return FMath::Clamp(Progress, 0.0f, 1.0f);
 }
+

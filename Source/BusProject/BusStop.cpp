@@ -4,6 +4,7 @@
 #include "Engine/Engine.h"
 #include "GMTimeAttack.h"
 #include "Materials/MaterialInterface.h"
+#include "Math/UnrealMathUtility.h"  // For FMath::RandRange
 
 ABusStop::ABusStop()
 {
@@ -22,11 +23,17 @@ ABusStop::ABusStop()
     IsBusStopTargeted = false;
     DefaultMaterial = nullptr;
     TargetedMaterial = nullptr;
+
+    MinNumberOfPassengers = 0;  // Set default values
+    MaxNumberOfPassengers = 10;
 }
 
 void ABusStop::BeginPlay()
 {
     Super::BeginPlay();
+
+    // Randomize the number of passengers at the start
+    RandomizeNumberOfPassengers();
 
     TArray<UStaticMeshComponent*> FlagComponents;
     GetComponents<UStaticMeshComponent>(FlagComponents);
@@ -55,7 +62,7 @@ void ABusStop::OnTriggerBoxOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
     {
         if (IsBusStopTargeted)
         {
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Valid: Player passed through the targeted bus stop!"));
+            //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Valid: Player passed through the targeted bus stop!"));
 
             AGMTimeAttack* GameMode = Cast<AGMTimeAttack>(GetWorld()->GetAuthGameMode());
             if (GameMode)
@@ -69,7 +76,7 @@ void ABusStop::OnTriggerBoxOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
         }
         else
         {
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Invalid: Player passed through a non-targeted bus stop!"));
+            //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Invalid: Player passed through a non-targeted bus stop!"));
         }
     }
 }
@@ -115,4 +122,9 @@ void ABusStop::ResetToDefaultMaterial()
             }
         }
     }
+}
+
+void ABusStop::RandomizeNumberOfPassengers()
+{
+    NumberOfPassengers = FMath::RandRange(MinNumberOfPassengers, MaxNumberOfPassengers);
 }

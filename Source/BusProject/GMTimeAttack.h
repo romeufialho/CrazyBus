@@ -18,9 +18,6 @@ public:
     virtual void Tick(float DeltaTime) override;
 
     UFUNCTION(BlueprintCallable, Category = "Default")
-    void AddTimeToTimer(int32 TimeToAdd);
-
-    UFUNCTION(BlueprintCallable, Category = "Default")
     void SpawnPlayer();
 
     UFUNCTION(BlueprintCallable, Category = "Default")
