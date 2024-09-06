@@ -16,10 +16,6 @@ class BUSPROJECT_API ABusStop : public AActor
 public:
     ABusStop();
 
-protected:
-    virtual void BeginPlay() override;
-
-public:
     virtual void Tick(float DeltaTime) override;
 
     UFUNCTION()
@@ -41,6 +37,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Bus Stop")
     void RandomizeNumberOfPassengers();
+
+protected:
+    virtual void BeginPlay() override;
 
 private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))

@@ -59,6 +59,15 @@ public:
 
     void OnPreGameCountdownCompleted();
 
+    UFUNCTION(BlueprintCallable, Category = "Scores")
+    float GetFinalScore() const;
+
+    UPROPERTY(BlueprintReadWrite, Category = "Scores")
+    int32 TotalScore;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Scores")
+    int32 TotalPassengersMult;
+
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Spawning")
     TSubclassOf<APawn> CarPawnClass;
@@ -95,6 +104,9 @@ protected:
 
     UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Countdown")
     float PreGameCountdownTime;
+
+    FTimerHandle GoTextTimerHandle;
+    void ClearGoText();
 
 private:
     float TimeSinceLastBusStop;

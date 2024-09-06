@@ -90,9 +90,17 @@ void AGMTimeAttack::UpdatePreGameCountdown(float DeltaTime)
 
             CountdownTime = StartCountdownDuration;
             StartCountdown(StartCountdownDuration);
+
+            GetWorld()->GetTimerManager().SetTimer(GoTextTimerHandle, this, &AGMTimeAttack::ClearGoText, 1.0f, false);
         }
     }
 }
+
+void AGMTimeAttack::ClearGoText()
+{
+    PregameGoText = FText::FromString(TEXT(""));
+}
+
 
 void AGMTimeAttack::OnPreGameCountdownCompleted()
 {
@@ -114,6 +122,7 @@ void AGMTimeAttack::UpdateCountdown(float DeltaTime)
         {
             CountdownTime = 0;
             GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Time is up!"));
+            GetFinalScore();
         }
     }
 }
@@ -349,4 +358,15 @@ float AGMTimeAttack::GetProgressBarValue() const
     float Progress = TimeSinceLastBusStop / StreakResetTime;
 
     return FMath::Clamp(Progress, 0.0f, 1.0f);
+}
+
+
+float AGMTimeAttack::GetFinalScore() const
+{
+    float FinalScore = TotalPassengers * TotalPassengersMult;
+
+    // Log final score for debugging
+    GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Final Score: %.2f"), FinalScore));
+
+    return FinalScore;
 }
