@@ -17,6 +17,9 @@ public:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
 
+    UPROPERTY(BlueprintReadWrite, Category = "Countdown")
+    FText PregameGoText;
+
     UFUNCTION(BlueprintCallable, Category = "Default")
     void SpawnPlayer();
 
@@ -50,6 +53,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "TimeAttack")
     float GetProgressBarValue() const;
 
+    void StartPreGameCountdown();
+
+    void UpdatePreGameCountdown(float DeltaTime);
+
+    void OnPreGameCountdownCompleted();
+
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Spawning")
     TSubclassOf<APawn> CarPawnClass;
@@ -66,7 +75,7 @@ protected:
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default")
     AActor* TargetedBusStop;
 
-    UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
+    UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Countdown")
     float StartCountdownDuration;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default")
@@ -77,6 +86,15 @@ protected:
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Multiplier")
     float StreakResetTime;
+
+    UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Countdown")
+    bool bIsPreGameCountdownActive;
+
+    UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Countdown")
+    bool bIsGameActive;
+
+    UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Countdown")
+    float PreGameCountdownTime;
 
 private:
     float TimeSinceLastBusStop;

@@ -8,14 +8,14 @@
 AGMTimeAttack::AGMTimeAttack()
 {
     PrimaryActorTick.bCanEverTick = true;
-
     TimeSinceLastBusStop = 0.0f;
+    PregameGoText = FText::FromString(TEXT(""));
 }
 
 void AGMTimeAttack::BeginPlay()
 {
     Super::BeginPlay();
-
+    CountdownTime = StartCountdownDuration;
     UWorld* World = GetWorld();
     if (!World)
     {
@@ -47,23 +47,56 @@ void AGMTimeAttack::BeginPlay()
 
     FindClosestBusStop();
 
-    CountdownTime = StartCountdownDuration;
-    //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("CountdownTime initialized to: %f"), CountdownTime));
-    StartCountdown(StartCountdownDuration);
+    StartPreGameCountdown();
 }
 
 void AGMTimeAttack::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    UpdateCountdown(DeltaTime);
-
-    TimeSinceLastBusStop += DeltaTime;
-
-    if (TimeSinceLastBusStop > StreakResetTime)
+    UpdatePreGameCountdown(DeltaTime);
+    if (bIsGameActive)
     {
-        ResetMultiplier();
+        UpdateCountdown(DeltaTime);
+        TimeSinceLastBusStop += DeltaTime;
+
+        if (TimeSinceLastBusStop > StreakResetTime)
+        {
+            ResetMultiplier();
+        }
     }
+}
+
+void AGMTimeAttack::StartPreGameCountdown()
+{
+    PreGameCountdownTime = 3.0f;
+    bIsPreGameCountdownActive = true;
+}
+
+void AGMTimeAttack::UpdatePreGameCountdown(float DeltaTime)
+{
+    if (bIsPreGameCountdownActive)
+    {
+        PreGameCountdownTime -= DeltaTime;
+
+        if (PreGameCountdownTime <= 0.0f)
+        {
+            PreGameCountdownTime = 0.0f;
+            bIsPreGameCountdownActive = false;
+            bIsGameActive = true;
+
+            PregameGoText = FText::FromString(TEXT("GO!"));
+            OnPreGameCountdownCompleted();
+
+            CountdownTime = StartCountdownDuration;
+            StartCountdown(StartCountdownDuration);
+        }
+    }
+}
+
+void AGMTimeAttack::OnPreGameCountdownCompleted()
+{
+    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("GO!"));
 }
 
 void AGMTimeAttack::StartCountdown(float Duration)
@@ -80,7 +113,6 @@ void AGMTimeAttack::UpdateCountdown(float DeltaTime)
         if (CountdownTime <= 0)
         {
             CountdownTime = 0;
-            // Timer has ended
             GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Time is up!"));
         }
     }
@@ -105,7 +137,6 @@ void AGMTimeAttack::HandleBusStopPass(int32 NumberOfPassengers)
 
     UpdateTotalPassengers(NumberOfPassengers);
 
-    // Reset time since last bus stop
     TimeSinceLastBusStop = 0.0f;
 }
 
@@ -117,7 +148,6 @@ void AGMTimeAttack::ResetMultiplier()
 
 void AGMTimeAttack::UpdateMultiplier()
 {
-    // Increase the multiplier based on the current streak
     if (CurrentMultiplier < 5.0f)
     {
         CurrentMultiplier += 0.5f;
@@ -153,31 +183,24 @@ void AGMTimeAttack::SpawnPlayer()
     FVector SpawnLocation = SpawnTransform.GetLocation();
     FRotator SpawnRotation = SpawnTransform.GetRotation().Rotator();
 
-    GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Spawning car at PlayerStart: %s, location: %s, rotation: %s"),
-        *SpawnPointName, *SpawnLocation.ToString(), *SpawnRotation.ToString()));
+    GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Spawning car at PlayerStart: %s, location: %s, rotation: %s"), *SpawnPointName, *SpawnLocation.ToString(), *SpawnRotation.ToString()));
 
-    if (!CarPawnClass)
+    if (CarPawnClass)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("CarPawnClass is not set in the Blueprint defaults!"));
-        return;
+        APawn* NewPawn = World->SpawnActor<APawn>(CarPawnClass, SpawnTransform);
+        if (NewPawn)
+        {
+            APlayerController* PC = World->GetFirstPlayerController();
+            if (PC)
+            {
+                PC->Possess(NewPawn);
+            }
+        }
+        else
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Failed to spawn the car!"));
+        }
     }
-
-    APawn* SpawnedCar = World->SpawnActor<APawn>(CarPawnClass, SpawnTransform);
-    if (!SpawnedCar)
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Failed to spawn the CarPawn!"));
-        return;
-    }
-
-    APlayerController* PlayerController = World->GetFirstPlayerController();
-    if (!PlayerController)
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No PlayerController found to possess the pawn!"));
-        return;
-    }
-
-    PlayerController->Possess(SpawnedCar);
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Successfully possessed the spawned CarPawn."));
 }
 
 void AGMTimeAttack::FindClosestBusStop()
@@ -289,17 +312,16 @@ void AGMTimeAttack::SetNewTargetBusStop()
     }
 }
 
+
 void AGMTimeAttack::UpdateTotalPassengers(int32 NewPassengers)
 {
     TotalPassengers += NewPassengers;
-    //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Total Passengers: %d"), TotalPassengers));
 }
 
 int32 AGMTimeAttack::GetTotalPassengers() const
 {
     return TotalPassengers;
 }
-
 FText AGMTimeAttack::GetCurrentMultiplier() const
 {
     return FText::FromString(FString::Printf(TEXT("%.1f x"), CurrentMultiplier));
@@ -328,4 +350,3 @@ float AGMTimeAttack::GetProgressBarValue() const
 
     return FMath::Clamp(Progress, 0.0f, 1.0f);
 }
-
