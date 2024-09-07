@@ -38,6 +38,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Bus Stop")
     void RandomizeNumberOfPassengers();
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bus Stop")
+    bool IsBusStopTargeted;
+
 protected:
     virtual void BeginPlay() override;
 
@@ -53,6 +56,4 @@ private:
 
     UPROPERTY(Transient, VisibleInstanceOnly, Category = "Bus Stop")
     int32 NumberOfPassengers;
-
-    bool IsBusStopTargeted;
 };

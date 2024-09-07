@@ -1,8 +1,8 @@
-"F:\Unreal Projects\CrazyBus\Plugins\Developer\RiderLink\Source\RD\thirdparty\countdownlatch\countdownlatch.cpp"
-/FI"F:\Unreal Projects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\Definitions.h"
-/Fo"F:\Unreal Projects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\countdownlatch.cpp.lc.obj"
-/sourceDependencies"F:\Unreal Projects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\countdownlatch.cpp.dep.lc.json"
-@"F:\Unreal Projects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\RD.Shared.rsp"
+"C:\GameProjects\CrazyBus\Plugins\Developer\RiderLink\Source\RD\thirdparty\countdownlatch\countdownlatch.cpp"
+/FI"C:\GameProjects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\Definitions.h"
+/Fo"C:\GameProjects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\countdownlatch.cpp.lc.obj"
+/sourceDependencies"C:\GameProjects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\countdownlatch.cpp.dep.lc.json"
+@"C:\GameProjects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\RD.Shared.rsp"
 /Zc:inline
 /nologo
 /Oi

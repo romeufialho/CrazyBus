@@ -3,6 +3,9 @@
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerController.h"
+#include "BusGameInstance.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundBase.h"
 #include "Engine/Engine.h"
 
 AGMTimeAttack::AGMTimeAttack()
@@ -10,16 +13,43 @@ AGMTimeAttack::AGMTimeAttack()
     PrimaryActorTick.bCanEverTick = true;
     TimeSinceLastBusStop = 0.0f;
     PregameGoText = FText::FromString(TEXT(""));
+    TotalPassengers = 0;
+    ScoreMultiplier = 1.0f;
+
+    Countdown3Sound = nullptr;
+    Countdown2Sound = nullptr;
+    Countdown1Sound = nullptr;
+    GoSound = nullptr;
+
+    USceneComponent* Root = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+    RootComponent = Root;
+
+    Countdown3AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Countdown3AudioComponent"));
+    Countdown2AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Countdown2AudioComponent"));
+    Countdown1AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Countdown1AudioComponent"));
+    GoAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("GoAudioComponent"));
+
+    Countdown3AudioComponent->SetupAttachment(RootComponent);
+    Countdown2AudioComponent->SetupAttachment(RootComponent);
+    Countdown1AudioComponent->SetupAttachment(RootComponent);
+    GoAudioComponent->SetupAttachment(RootComponent);
 }
 
 void AGMTimeAttack::BeginPlay()
 {
     Super::BeginPlay();
+
+    UBusGameInstance* BusGameInstance = Cast<UBusGameInstance>(GetWorld()->GetGameInstance());
+    if (BusGameInstance)
+    {
+        BusGameInstance->ScoreMultiplier = ScoreMultiplier;
+    }
+
     CountdownTime = StartCountdownDuration;
     UWorld* World = GetWorld();
     if (!World)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("World is null in BeginPlay!"));
+        // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("World is null in BeginPlay!"));
         return;
     }
 
@@ -31,16 +61,16 @@ void AGMTimeAttack::BeginPlay()
 
         if (BusStops.Num() > 0)
         {
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Found %d BusStop actors"), BusStops.Num()));
+            // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Found %d BusStop actors"), BusStops.Num()));
         }
         else
         {
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No BusStop actors found in the level!"));
+            // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No BusStop actors found in the level!"));
         }
     }
     else
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Failed to load BusStop class!"));
+        // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Failed to load BusStop class!"));
     }
 
     SpawnPlayer();
@@ -69,7 +99,7 @@ void AGMTimeAttack::Tick(float DeltaTime)
 
 void AGMTimeAttack::StartPreGameCountdown()
 {
-    PreGameCountdownTime = 3.0f;
+    PreGameCountdownTime = 3.1f;
     bIsPreGameCountdownActive = true;
 }
 
@@ -78,6 +108,9 @@ void AGMTimeAttack::UpdatePreGameCountdown(float DeltaTime)
     if (bIsPreGameCountdownActive)
     {
         PreGameCountdownTime -= DeltaTime;
+
+        int32 PreCountdownValue = FMath::CeilToInt(PreGameCountdownTime);
+        PlayCountdownSound(PreCountdownValue);
 
         if (PreGameCountdownTime <= 0.0f)
         {
@@ -92,7 +125,48 @@ void AGMTimeAttack::UpdatePreGameCountdown(float DeltaTime)
             StartCountdown(StartCountdownDuration);
 
             GetWorld()->GetTimerManager().SetTimer(GoTextTimerHandle, this, &AGMTimeAttack::ClearGoText, 1.0f, false);
+
         }
+    }
+}
+
+void AGMTimeAttack::PlayCountdownSound(int32 CountdownValue)
+{
+    // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Entered PlayCountdownSound"));
+
+    switch (CountdownValue)
+    {
+    case 3:
+        if (Countdown3AudioComponent && Countdown3Sound)
+        {
+            Countdown3AudioComponent->SetSound(Countdown3Sound);
+            Countdown3AudioComponent->Play();
+        }
+        break;
+    case 2:
+        if (Countdown2AudioComponent && Countdown2Sound)
+        {
+            Countdown2AudioComponent->SetSound(Countdown2Sound);
+            Countdown2AudioComponent->Play();
+        }
+        break;
+    case 1:
+        if (Countdown1AudioComponent && Countdown1Sound)
+        {
+            Countdown1AudioComponent->SetSound(Countdown1Sound);
+            Countdown1AudioComponent->Play();
+        }
+        break;
+    case 0:
+        if (GoAudioComponent && GoSound)
+        {
+            GoAudioComponent->SetSound(GoSound);
+            GoAudioComponent->Play();
+        }
+        break;
+    default:
+        // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Invalid countdown value"));
+        break;
     }
 }
 
@@ -101,10 +175,9 @@ void AGMTimeAttack::ClearGoText()
     PregameGoText = FText::FromString(TEXT(""));
 }
 
-
 void AGMTimeAttack::OnPreGameCountdownCompleted()
 {
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("GO!"));
+    // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("GO!"));
 }
 
 void AGMTimeAttack::StartCountdown(float Duration)
@@ -121,8 +194,7 @@ void AGMTimeAttack::UpdateCountdown(float DeltaTime)
         if (CountdownTime <= 0)
         {
             CountdownTime = 0;
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Time is up!"));
-            GetFinalScore();
+            // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Time is up!"));
         }
     }
 }
@@ -135,7 +207,7 @@ void AGMTimeAttack::AddTimeToTimerWithMultiplier(int32 BaseTimeToAdd)
     {
         CountdownTime = StartCountdownDuration;
     }
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Time added: %d, Multiplier: %f, Total: %f"), TimeToAdd, CurrentMultiplier, CountdownTime));
+    // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Time added: %d, Multiplier: %f, Total: %f"), TimeToAdd, CurrentMultiplier, CountdownTime));
 }
 
 void AGMTimeAttack::HandleBusStopPass(int32 NumberOfPassengers)
@@ -152,7 +224,7 @@ void AGMTimeAttack::HandleBusStopPass(int32 NumberOfPassengers)
 void AGMTimeAttack::ResetMultiplier()
 {
     CurrentMultiplier = 0.5f;
-    //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Multiplier reset to 0.5"));
+    // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Multiplier reset to 0.5"));
 }
 
 void AGMTimeAttack::UpdateMultiplier()
@@ -161,7 +233,7 @@ void AGMTimeAttack::UpdateMultiplier()
     {
         CurrentMultiplier += 0.5f;
     }
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Current Multiplier: %f"), CurrentMultiplier));
+    // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Current Multiplier: %f"), CurrentMultiplier));
 }
 
 void AGMTimeAttack::SpawnPlayer()
@@ -169,13 +241,13 @@ void AGMTimeAttack::SpawnPlayer()
     UWorld* World = GetWorld();
     if (!World)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("World is null!"));
+        // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("World is null!"));
         return;
     }
 
     if (SpawnLocations.Num() == 0)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No PlayerStart actors found in the level!"));
+        // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No PlayerStart actors found in the level!"));
         return;
     }
 
@@ -183,7 +255,7 @@ void AGMTimeAttack::SpawnPlayer()
     APlayerStart* SelectedPlayerStart = Cast<APlayerStart>(SpawnLocations[RandomIndex]);
     if (!SelectedPlayerStart)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Failed to cast to APlayerStart!"));
+        // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Failed to cast to APlayerStart!"));
         return;
     }
 
@@ -192,7 +264,7 @@ void AGMTimeAttack::SpawnPlayer()
     FVector SpawnLocation = SpawnTransform.GetLocation();
     FRotator SpawnRotation = SpawnTransform.GetRotation().Rotator();
 
-    GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Spawning car at PlayerStart: %s, location: %s, rotation: %s"), *SpawnPointName, *SpawnLocation.ToString(), *SpawnRotation.ToString()));
+    // GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("Spawning car at PlayerStart: %s, location: %s, rotation: %s"), *SpawnPointName, *SpawnLocation.ToString(), *SpawnRotation.ToString()));
 
     if (CarPawnClass)
     {
@@ -207,7 +279,7 @@ void AGMTimeAttack::SpawnPlayer()
         }
         else
         {
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Failed to spawn the car!"));
+            // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Failed to spawn the car!"));
         }
     }
 }
@@ -217,21 +289,21 @@ void AGMTimeAttack::FindClosestBusStop()
     UWorld* World = GetWorld();
     if (!World)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("World is null in FindClosestBusStop!"));
+        // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("World is null in FindClosestBusStop!"));
         return;
     }
 
     APlayerController* PlayerController = World->GetFirstPlayerController();
     if (!PlayerController)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No PlayerController found!"));
+        // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No PlayerController found!"));
         return;
     }
 
     APawn* PlayerPawn = PlayerController->GetPawn();
     if (!PlayerPawn)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("PlayerPawn is null!"));
+        // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("PlayerPawn is null!"));
         return;
     }
 
@@ -255,8 +327,8 @@ void AGMTimeAttack::FindClosestBusStop()
     if (ClosestBusStop)
     {
         TargetedBusStop = ClosestBusStop;
-        /*GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Closest BusStop found at location: %s, distance: %f"),
-            *ClosestBusStop->GetActorLocation().ToString(), ClosestDistance));*/
+        /* GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Closest BusStop found at location: %s, distance: %f"),
+            *ClosestBusStop->GetActorLocation().ToString(), ClosestDistance)); */
 
         ABusStop* BusStopActor = Cast<ABusStop>(TargetedBusStop);
         if (BusStopActor)
@@ -266,7 +338,7 @@ void AGMTimeAttack::FindClosestBusStop()
     }
     else
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No BusStop found!"));
+        // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No BusStop found!"));
     }
 }
 
@@ -274,7 +346,7 @@ void AGMTimeAttack::SetNewTargetBusStop()
 {
     if (BusStops.Num() == 0)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No BusStop actors available to target!"));
+        // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No BusStop actors available to target!"));
         return;
     }
 
@@ -296,7 +368,7 @@ void AGMTimeAttack::SetNewTargetBusStop()
 
     if (ValidBusStops.Num() == 0)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No valid BusStop actors available to target!"));
+        // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No valid BusStop actors available to target!"));
         return;
     }
 
@@ -313,24 +385,25 @@ void AGMTimeAttack::SetNewTargetBusStop()
             BusStopActor->SetIsBusStopTargeted(true);
         }
 
-        //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("New target BusStop set!"));
+        // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("New target BusStop set!"));
     }
     else
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Failed to set new target BusStop!"));
+        // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Failed to set new target BusStop!"));
     }
 }
-
 
 void AGMTimeAttack::UpdateTotalPassengers(int32 NewPassengers)
 {
     TotalPassengers += NewPassengers;
+    SetScore();
 }
 
 int32 AGMTimeAttack::GetTotalPassengers() const
 {
     return TotalPassengers;
 }
+
 FText AGMTimeAttack::GetCurrentMultiplier() const
 {
     return FText::FromString(FString::Printf(TEXT("%.1f x"), CurrentMultiplier));
@@ -360,13 +433,23 @@ float AGMTimeAttack::GetProgressBarValue() const
     return FMath::Clamp(Progress, 0.0f, 1.0f);
 }
 
-
-float AGMTimeAttack::GetFinalScore() const
+void AGMTimeAttack::SetScore()
 {
-    float FinalScore = TotalPassengers * TotalPassengersMult;
+    UBusGameInstance* BusGameInstance = Cast<UBusGameInstance>(GetWorld()->GetGameInstance());
+    if (BusGameInstance)
+    {
+        int32 PassengerCount = TotalPassengers;
+        float Multiplier = BusGameInstance->ScoreMultiplier;
 
-    // Log final score for debugging
-    GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, FString::Printf(TEXT("Final Score: %.2f"), FinalScore));
+        // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Passengers: %d, Multiplier: %f"), PassengerCount, Multiplier));
 
-    return FinalScore;
+        int32 CalculatedScore = PassengerCount * Multiplier;
+        // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Calculated Score: %d"), CalculatedScore));
+
+        BusGameInstance->Score = CalculatedScore;
+    }
+    else
+    {
+        // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("BusGameInstance is null!"));
+    }
 }

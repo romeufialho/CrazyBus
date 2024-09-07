@@ -59,14 +59,10 @@ public:
 
     void OnPreGameCountdownCompleted();
 
-    UFUNCTION(BlueprintCallable, Category = "Scores")
-    float GetFinalScore() const;
+    void SetScore();
 
-    UPROPERTY(BlueprintReadWrite, Category = "Scores")
-    int32 TotalScore;
-
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Scores")
-    int32 TotalPassengersMult;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Score")
+    int32 ScoreMultiplier;
 
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Spawning")
@@ -120,4 +116,30 @@ private:
     void UpdateTotalPassengers(int32 NewPassengers);
 
     int32 GetTotalPassengers() const;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Sounds")
+    USoundBase* Countdown3Sound;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Sounds")
+    USoundBase* Countdown2Sound;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Sounds")
+    USoundBase* Countdown1Sound;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Sounds")
+    USoundBase* GoSound;
+
+    UPROPERTY(EditAnywhere, Category = "Audio")
+    UAudioComponent* Countdown3AudioComponent;
+
+    UPROPERTY(EditAnywhere, Category = "Audio")
+    UAudioComponent* Countdown2AudioComponent;
+
+    UPROPERTY(EditAnywhere, Category = "Audio")
+    UAudioComponent* Countdown1AudioComponent;
+
+    UPROPERTY(EditAnywhere, Category = "Audio")
+    UAudioComponent* GoAudioComponent;
+
+    void PlayCountdownSound(int32 CountdownValue);
 };

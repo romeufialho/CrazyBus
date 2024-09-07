@@ -1,8 +1,8 @@
-"F:\Unreal Projects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLink\Module.RiderLink.cpp"
-/FI"F:\Unreal Projects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLink\Definitions.h"
-/Fo"F:\Unreal Projects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLink\Module.RiderLink.cpp.lc.obj"
-/sourceDependencies"F:\Unreal Projects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLink\Module.RiderLink.cpp.dep.lc.json"
-@"F:\Unreal Projects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLink\RiderLink.Shared.rsp"
+"C:\GameProjects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLink\Module.RiderLink.cpp"
+/FI"C:\GameProjects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLink\Definitions.h"
+/Fo"C:\GameProjects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLink\Module.RiderLink.cpp.lc.obj"
+/sourceDependencies"C:\GameProjects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLink\Module.RiderLink.cpp.dep.lc.json"
+@"C:\GameProjects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLink\RiderLink.Shared.rsp"
 /Zc:inline
 /nologo
 /Oi
