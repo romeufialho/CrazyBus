@@ -1,8 +1,8 @@
-"F:\Unreal Projects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderDebuggerSupport\Module.RiderDebuggerSupport.cpp"
-/FI"F:\Unreal Projects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderDebuggerSupport\Definitions.h"
-/Fo"F:\Unreal Projects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderDebuggerSupport\Module.RiderDebuggerSupport.cpp.obj"
-/sourceDependencies "F:\Unreal Projects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderDebuggerSupport\Module.RiderDebuggerSupport.cpp.dep.json"
-@"F:\Unreal Projects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderDebuggerSupport\RiderDebuggerSupport.Shared.rsp"
+"C:\GameProjects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderDebuggerSupport\Module.RiderDebuggerSupport.cpp"
+/FI"C:\GameProjects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderDebuggerSupport\Definitions.h"
+/Fo"C:\GameProjects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderDebuggerSupport\Module.RiderDebuggerSupport.cpp.obj"
+/sourceDependencies "C:\GameProjects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderDebuggerSupport\Module.RiderDebuggerSupport.cpp.dep.json"
+@"C:\GameProjects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderDebuggerSupport\RiderDebuggerSupport.Shared.rsp"
 /Zc:inline
 /nologo
 /Oi

@@ -260,7 +260,7 @@ void AGMTimeAttack::SpawnPlayer()
     }
 
     FTransform SpawnTransform = SelectedPlayerStart->GetActorTransform();
-    FString SpawnPointName = SelectedPlayerStart->GetActorLabel();
+    FString SpawnPointName = SelectedPlayerStart->GetName();
     FVector SpawnLocation = SpawnTransform.GetLocation();
     FRotator SpawnRotation = SpawnTransform.GetRotation().Rotator();
 

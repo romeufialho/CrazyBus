@@ -6,6 +6,6 @@
 /NAME:"UnrealEditor-RiderDebuggerSupport.dll"
 /IGNORE:4221
 /NODEFAULTLIB
-"C:\GameProjects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderDebuggerSupport\Module.RiderDebuggerSupport.cpp.obj"
-"C:\GameProjects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderDebuggerSupport\Default.rc2.res"
-/OUT:"C:\GameProjects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderDebuggerSupport\UnrealEditor-RiderDebuggerSupport.lib"
+"F:\Unreal Projects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderDebuggerSupport\Module.RiderDebuggerSupport.cpp.obj"
+"F:\Unreal Projects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderDebuggerSupport\Default.rc2.res"
+/OUT:"F:\Unreal Projects\CrazyBus\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderDebuggerSupport\UnrealEditor-RiderDebuggerSupport.lib"
