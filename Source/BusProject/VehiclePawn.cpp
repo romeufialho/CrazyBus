@@ -102,4 +102,40 @@ void AVehiclePawn::Turn(float Val)
 
 void AVehiclePawn::UpdateInAirControl(float DeltaTime)
 {
+	if (UChaosWheeledVehicleMovementComponent* Vehicle = CastChecked<UChaosWheeledVehicleMovementComponent>(GetVehicleMovement()))
+	{
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(this);
+
+		const FVector TraceStart = GetActorLocation() + FVector(0.f, 0.f, 50.f);
+		const FVector TraceEnd = GetActorLocation() - FVector(0.f, 0.f, 200.f);
+
+		FHitResult Hit;
+
+		// check if car is flipped on its side, and check if the car is in air
+		const bool bInAir = !GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, QueryParams);
+		const bool bNotGrounded = FVector::DotProduct(GetActorUpVector(), FVector::UpVector) < 0.1f;
+
+		// only allow in air-movement if we are not on the ground, or are in the air
+		if (bInAir || bNotGrounded)
+		{
+			const float ForwardInput = InputComponent->GetAxisValue(NAME_ThrottleInput);
+			const float RightInput = InputComponent->GetAxisValue(NAME_SteerInput);
+
+			// car is grounded -- allow player to roll the car over
+			const float AirMovementForcePitch = 3.f;
+			const float AirMovementForceRoll = !bInAir && bNotGrounded ? 20.f : 3.f; // this is because a lot more force is required to roll the car if it is grounded,
+																				     // compared to when it in mid air
+			
+			// Movement Vector - Describes the direction or angle in which the vehicle should stop moving
+			if (UPrimitiveComponent* VehicleMesh = Vehicle->UpdatedPrimitive)
+			{
+				const FVector MovementVector = FVector(RightInput * -AirMovementForceRoll, ForwardInput * AirMovementForcePitch, 0.f) * DeltaTime * 200.f;
+				// rotate this vector by our angular rotation
+				const FVector NewAngularMovement = GetActorRotation().RotateVector(MovementVector);
+
+				VehicleMesh->SetPhysicsAngularVelocityInDegrees(NewAngularMovement, true);
+			}
+		}
+	}
 }
